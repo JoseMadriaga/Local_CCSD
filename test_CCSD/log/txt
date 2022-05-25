@@ -1,0 +1,55 @@
+Fae works with R2
+
+-0.07409695623370743 simulation code
+-0.07409695623371022 my implementation
+
+but when I try doing it for R1 it starts diverging
+
+Fmi 1st term works with R2 
+
+-0.03686620114164129
+-0.03686620114164144
+
+2nd term
+
+-0.03686620114164128
+-0.03686620114164144
+
+3rd term
+-0.036866201141641256
+-0.03686620114164144
+
+Fmi not working with R1
+
+#1st attempt
+CC Iter   6: CC Ecorr = -0.0364562653       40706  dE = -1.59395E-04  rms =  1.08950E-03
+CC Iter   7: CC Ecorr = -0.03656753         5289336  dE = -1.11270E-04  rms =  7.79168E-04
+CC Iter   8: CC Ecorr = -0.03664            5872855072  dE = -7.83376E-05  rms =  5.61182E-04
+CC Iter   9: CC Ecorr = -0.0                36701325613854  dE = -5.54528E-05  rms =  4.09575E-04
+CC Iter  10: CC Ecorr = -0.036740924595627  dE = -3.95990E-05  rms =  3.04427E-04
+CC Iter  11: CC Ecorr = -0.036769477831755  dE = -2.85532E-05  rms =  2.32156E-04
+
+
+CC Iter   6: CC Ecorr = -0.0364562653       19119  dE = -1.59395E-04  rms =  7.06941E-03
+CC Iter   7: CC Ecorr = -0.03656753         6292364  dE = -1.11271E-04  rms =  8.91757E-03
+CC Iter   8: CC Ecorr = -0.03664            2804733058  dE = -7.52684E-05  rms =  7.01093E-01
+CC Iter   9: CC Ecorr = -0.0                21023805524439  dE =  1.56190E-02  rms =  7.07743E+01
+CC Iter  10: CC Ecorr = 83.758042223851746  dE =  8.37791E+01  rms =  7.17001E+03
+CC Iter  11: CC Ecorr = 449176.309624428977259  dE =  4.49093E+05  rms =  7.27947E+05
+
+#2nd attempt
+
+CC Iter   6: CC Ecorr = -0.036              456265340706  dE = -1.59395E-04  rms =  1.08950E-03
+CC Iter   7: CC Ecorr = -0.036              567535289336  dE = -1.11270E-04  rms =  7.79168E-04
+CC Iter   8: CC Ecorr = -0.036645872855072  dE = -7.83376E-05  rms =  5.61182E-04
+CC Iter   9: CC Ecorr = -0.036701325613854  dE = -5.54528E-05  rms =  4.09575E-04
+CC Iter  10: CC Ecorr = -0.036740924595627  dE = -3.95990E-05  rms =  3.04427E-04
+CC Iter  11: CC Ecorr = -0.036769477831755  dE = -2.85532E-05  rms =  2.32156E-04
+
+CC Iter   5: CC Ecorr = -0.036                296870019209  dE = -2.25697E-04  rms =  9.27272E-03
+CC Iter   6: CC Ecorr = -0.036                455523149190  dE = -1.58653E-04  rms =  3.88128E-02
+CC Iter   7: CC Ecorr = 0.03                  1060099415702  dE =  6.75156E-02  rms =  1.16267E+01
+CC Iter   8: CC Ecorr = 6244.390488572325012  dE =  6.24436E+03  rms =  3.54738E+03
+CC Iter   9: CC Ecorr = 578658626.517438292503357  dE =  5.78652E+08  rms =  1.08368E+06
+
+

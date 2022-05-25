@@ -1,0 +1,209 @@
+reading from LPNO-CEPA 2009, looks like they transform the PNO to the semicanonical basis but don't diagonalize them 
+therefore my implementation, lccwfn_test1.py, is not correct in terms of checking my work against the simulation code
+lccwfn_test1.py attempts to only transform them to the the PNO basis while only transforming the singles and doubles ampltiudes to the semicanonical during the amplitude updates
+
+going back to lccwfn_test.py which keeps the singles amplitude in the MO basis while using the simulation code for doubles to keep track of my implentation of the doubles
+
+input file 
+H2O
+lccsd/6-31g LPNO 
+
+e_conv 1e-7 
+r_conv 1e-3
+Local_cutoff 1e-7 
+
+working so far 
+#Fae 1 and 2 for both singles and doubles
+
+-0.30556600133252787
+-0.30556600133252787
+
+CC Iter 253: CC Ecorr = -0.305565358454913  dE = -1.18089E-07  rms =  4.46229E-05
+CC Iter 254: CC Ecorr = -0.305565473267784  dE = -1.14813E-07  rms =  4.34243E-05
+CC Iter 255: CC Ecorr = -0.305565584896884  dE = -1.11629E-07  rms =  4.22580E-05
+CC Iter 256: CC Ecorr = -0.305565693431984  dE = -1.08535E-07  rms =  4.11233E-05
+CC Iter 257: CC Ecorr = -0.305565798960260  dE = -1.05528E-07  rms =  4.00192E-05
+CC Iter 258: CC Ecorr = -0.305565901566369  dE = -1.02606E-07  rms =  3.89449E-05
+CC Iter 259: CC Ecorr = -0.305566001332528  dE = -9.97662E-08  rms =  3.78997E-05
+
+CC Iter 253: CC Ecorr = -0.305565358454913  dE = -1.18089E-07  rms =  1.26277E-06
+CC Iter 254: CC Ecorr = -0.305565473267784  dE = -1.14813E-07  rms =  1.22958E-06
+CC Iter 255: CC Ecorr = -0.305565584896884  dE = -1.11629E-07  rms =  1.19726E-06
+CC Iter 256: CC Ecorr = -0.305565693431984  dE = -1.08535E-07  rms =  1.16580E-06
+CC Iter 257: CC Ecorr = -0.305565798960260  dE = -1.05528E-07  rms =  1.13517E-06
+CC Iter 258: CC Ecorr = -0.305565901566369  dE = -1.02606E-07  rms =  1.10535E-06
+CC Iter 259: CC Ecorr = -0.305566001332528  dE = -9.97662E-08  rms =  1.07632E-06
+
+#for Fae 3rd term for both singles and doubles 
+
+-0.3145577094602837
+-0.3145405498641834
+
+CC Iter 262: CC Ecorr = -0.314540029812745  dE = -1.12892E-07  rms =  4.05931E-05
+CC Iter 263: CC Ecorr = -0.314540139632793  dE = -1.09820E-07  rms =  3.95261E-05
+CC Iter 264: CC Ecorr = -0.314540246466461  dE = -1.06834E-07  rms =  3.84874E-05
+CC Iter 265: CC Ecorr = -0.314540350396417  dE = -1.03930E-07  rms =  3.74761E-05
+CC Iter 266: CC Ecorr = -0.314540451502979  dE = -1.01107E-07  rms =  3.64916E-05
+CC Iter 267: CC Ecorr = -0.314540549864183  dE = -9.83612E-08  rms =  3.55330E-05
+
+CC Iter 262: CC Ecorr = -0.314557189270151  dE = -1.12922E-07  rms =  1.16186E-06
+CC Iter 263: CC Ecorr = -0.314557299119753  dE = -1.09850E-07  rms =  1.13200E-06
+CC Iter 264: CC Ecorr = -0.314557405982036  dE = -1.06862E-07  rms =  1.10292E-06
+CC Iter 265: CC Ecorr = -0.314557509939700  dE = -1.03958E-07  rms =  1.07459E-06
+CC Iter 266: CC Ecorr = -0.314557611073093  dE = -1.01133E-07  rms =  1.04699E-06
+CC Iter 267: CC Ecorr = -0.314557709460284  dE = -9.83872E-08  rms =  1.02011E-06
+
+Fae2 += contract('F,AFE,eE,aA->ae',Y, Lovvv_ij[mm][m],Sijmm,Sijmm)
+
+#second attempt 
+
+-0.3145577094602837
+-0.31391597942286426
+
+
+#just trying out Fae 1 and 3 for singles and doubles
+
+-0.3145577094602837
+-0.3145405498641834
+
+looks like Fae 2 doesn't really contribute yet 
+
+#full Fae for singles while Fae 1 and 3 for doubles
+
+-0.31423775401970866
+-0.31422111949442716
+
+CC Iter 262: CC Ecorr = -0.314220604358185  dE = -1.11830E-07  rms =  4.03688E-05
+CC Iter 263: CC Ecorr = -0.314220713143706  dE = -1.08786E-07  rms =  3.93070E-05
+CC Iter 264: CC Ecorr = -0.314220818969277  dE = -1.05826E-07  rms =  3.82733E-05
+CC Iter 265: CC Ecorr = -0.314220921916870  dE = -1.02948E-07  rms =  3.72669E-05
+CC Iter 266: CC Ecorr = -0.314221022066128  dE = -1.00149E-07  rms =  3.62871E-05
+CC Iter 267: CC Ecorr = -0.314221119494427  dE = -9.74283E-08  rms =  3.53332E-05
+
+CC Iter 262: CC Ecorr = -0.314237238750460  dE = -1.11859E-07  rms =  1.15529E-06
+CC Iter 263: CC Ecorr = -0.314237347564324  dE = -1.08814E-07  rms =  1.12558E-06
+CC Iter 264: CC Ecorr = -0.314237453417337  dE = -1.05853E-07  rms =  1.09664E-06
+CC Iter 265: CC Ecorr = -0.314237556391502  dE = -1.02974E-07  rms =  1.06845E-06
+CC Iter 266: CC Ecorr = -0.314237656566490  dE = -1.00175E-07  rms =  1.04099E-06
+CC Iter 267: CC Ecorr = -0.314237754019709  dE = -9.74532E-08  rms =  1.01424E-06
+
+#full Fae for singles while Fae 1 2 and 3 for doubles
+
+-0.31423775401970866
+-0.31422111949442716
+
+same results as full Fae for singles with Fae 1 and 3 for doubles
+
+#instead calculating Fae 2 and 3 in Mo then transforming them to the semicanonical PNO basis 
+
+-0.31423775401970877
+-0.3142377540197087
+
+#now looking at Fae 4 for doubles
+
+-0.28046603408792903
+-0.2801347150374115
+
+CC Iter 241: CC Ecorr = -0.280134192951973  dE = -1.13947E-07  rms =  4.56285E-05
+CC Iter 242: CC Ecorr = -0.280134303596146  dE = -1.10644E-07  rms =  4.43422E-05
+CC Iter 243: CC Ecorr = -0.280134411034040  dE = -1.07438E-07  rms =  4.30923E-05
+CC Iter 244: CC Ecorr = -0.280134515359791  dE = -1.04326E-07  rms =  4.18779E-05
+CC Iter 245: CC Ecorr = -0.280134616664719  dE = -1.01305E-07  rms =  4.06978E-05
+CC Iter 246: CC Ecorr = -0.280134715037411  dE = -9.83727E-08  rms =  3.95512E-05
+
+CC Iter 241: CC Ecorr = -0.280465512246273  dE = -1.13897E-07  rms =  1.24243E-06
+CC Iter 242: CC Ecorr = -0.280465622840207  dE = -1.10594E-07  rms =  1.20798E-06
+CC Iter 243: CC Ecorr = -0.280465730228589  dE = -1.07388E-07  rms =  1.17449E-06
+CC Iter 244: CC Ecorr = -0.280465834505570  dE = -1.04277E-07  rms =  1.14193E-06
+CC Iter 245: CC Ecorr = -0.280465935762484  dE = -1.01257E-07  rms =  1.11028E-06
+CC Iter 246: CC Ecorr = -0.280466034087929  dE = -9.83254E-08  rms =  1.07952E-06
+
+
+## moving on to the next intermediate 
+
+Fmi
+
+# full Fmi in singles and doubles with the doubles evaluated in the MO basis then transformed into the semicanoical PNO
+
+-0.13361353543658253
+-0.1336135354365825
+
+
+# full Fmi in singles and doubles
+
+-0.1336135354365825
+-0.1336135354365825
+
+this means that for the residuals, term 1 2 4 are good
+
+## moving on to the next intermediate
+
+Fme 
+
+#full Fme evaluated at MO then transformed into semicanonical PNO since the components are composed of single amplitudes
+
+-0.13361355527371865
+-0.1336135552737186
+
+# includes doubles up to 7th term
+
+-0.13361347866405307
+-0.13361340206236297
+
+I made a type and forgot the 0.5 at the seventh term
+
+#making sure it converges to 1e-10 at least
+
+-0.13361476446763038
+-0.13361476446763038
+
+## moving on to the next intermediate
+
+Wmnij
+
+# for now I have it such that Wmnij is evaluated at MO then transformed into the semicanonical PNO but going to change it since there is a doubles component
+
+the reason why this works is because the nonlocality of Wmnij gets filtered when multiplied by the tau which is local 
+
+-0.11027739718139888
+-0.11027739718139883
+
+this means the residuals are correct up to 8
+## moving on to the next intermediate 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

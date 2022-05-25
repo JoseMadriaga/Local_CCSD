@@ -1,0 +1,13 @@
+#attempt to get R1 to work
+Fae 1st and 2nd term
+R1 1st and 2nd term
+R2 1st and second term
+
+
+CC Iter  35: CC Ecorr = -0.077549799844306  dE =  8.84229E-05  rms =  1.18424E-01
+CC Iter  36: CC Ecorr = -0.077033899246207  dE =  5.15901E-04  rms =  2.65567E-01
+CC Iter  37: CC Ecorr = -0.074359318672605  dE =  2.67458E-03  rms =  5.96952E-01
+CC Iter  38: CC Ecorr = -0.060768516424020  dE =  1.35908E-02  rms =  1.34247E+00
+CC Iter  39: CC Ecorr = 0.008037849088665  dE =  6.88064E-02  rms =  3.01929E+00
+CC Iter  40: CC Ecorr = 0.356143626721294  dE =  3.48106E-01  rms =  6.79069E+00
+CC Iter  41: CC Ecorr = 2.117057035791051  dE =  1.76091E+00  rms =  1.52730E+01
