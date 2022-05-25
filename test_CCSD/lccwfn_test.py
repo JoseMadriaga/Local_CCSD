@@ -343,6 +343,8 @@ class lccwfn_test(object):
             #first term of Fae
             Fae = Fvv_ij[ij]
 
+            #For consistency at the moment, I have kept all the contraction with singles in the MO basis then transforming them 
+            #to the semicanonical local basis ... but for Fae1 and Fae2, the local implementation works!!!
             #second term of Fae
             #for m in range(self.no):
                 #mm = m*self.no + m
@@ -356,12 +358,14 @@ class lccwfn_test(object):
 
             tmp =  0.5 * contract('me,ma->ae', self.H.F[o,v], self.t1)
             Fae1 -= L[ij].T @ Q[ij].T @ tmp @ Q[ij] @ L[ij]
+                
                 #Fae1 -= 0.5* contract('eE,E,A,aA->ae',Sijmm,Fov_ii[mm][m],Y,Sijmm)
 
  
-                #third term of Fae
+                #third term of Fae (both ways work, need to know which is more efficient: the first one?)
                 #Fae2 += contract('F,afe,fF->ae',Y,Lovvv_ij[ij][m],Sijmm)
                 #Fae2 += contract('F,AFE,eE,aA->ae',Y, Lovvv_ij[mm][m],Sijmm,Sijmm)
+
             tmp1 = contract('mf,mafe->ae', self.t1, self.H.L[o,v,v,v])   
             Fae2 += L[ij].T @ Q[ij].T @ tmp1 @ Q[ij] @ L[ij]
 
@@ -436,12 +440,14 @@ class lccwfn_test(object):
 
                 Sijjn = L[ij].T @ Q[ij].T @ Q[jn] @ L[jn]
 
-                Wmbej3 -= contract('FB,mEF,eE,bB->mbej', self.build_localtau(jn,jn,t1, t2_ij, 0.5, 1.0), ERIoovv_ij[jn][:,n,:,:],Sijjn,Sijjn)
-                #Wmbej3 -= contract('FB,mef,fF,bB->mbej', self.build_localtau(jn,jn,t1, t2_ij, 0.5, 1.0), ERIoovv_ij[ij][:,n,:,:],Sijjn,Sijjn)
+                #incorrect since tau is in pair jn which j is a target index ... don't know how to contract
+                Wmbej3 -= contract('FB,mEF,eE,bB->mbe', self.build_localtau(jn,jn,t1, t2_ij, 0.5, 1.0), ERIoovv_ij[jn][:,n,:,:],Sijjn,Sijjn)
+                #Wmbej3 -= contract('FB,mef,fF,bB->mbe', self.build_localtau(jn,jn,t1, t2_ij, 0.5, 1.0), ERIoovv_ij[ij][:,n,:,:],Sijjn,Sijjn)
                
                 Sijnj = L[ij].T @ Q[ij].T @ Q[nj] @ L[nj]
-
-                #Wmbej4 += 0.5 * contract('njfb,mnef->mbej', t2_ij[nj], Loovv_ij[ij],Sijnj,Sijnj)
+                
+                #same here as well t2 is in a pair nj
+                #Wmbej4 += 0.5 * contract('FB,mnEF,bB,eE->mnbe', t2_ij[nj], Loovv_ij[ij],Sijnj,Sijnj)
 
             Wmbej_ij.append(Wmbej) # + Wmbej1 + Wmbej2)
         return Wmbej_ij
