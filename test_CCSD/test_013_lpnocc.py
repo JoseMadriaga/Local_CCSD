@@ -40,9 +40,9 @@ r_conv = 1e-3
 max_diis = 8
 
 
-ccsd = ccwfn_old(rhf_wfn,local='LPNO', local_cutoff=1e-7)
+ccsd = ccwfn_old(rhf_wfn,local='PNO', local_cutoff=1e-7)
 eccsd = ccsd.solve_cc(e_conv,r_conv,maxiter)
-ccsd_local = lccwfn_test(rhf_wfn, local='LPNO', local_cutoff=1e-7)
+ccsd_local = lccwfn_test(rhf_wfn, local='PNO', local_cutoff=1e-7)
 eccsd_local = ccsd_local.solve_localcc(e_conv, r_conv, maxiter)
 print(eccsd)
 print(eccsd_local)

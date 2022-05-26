@@ -85,7 +85,7 @@ class lccwfn_test(object):
         # models requiring T1-transformed integrals
         self.need_t1_transform = ['CC2', 'CC3']
 
-        valid_local_models = [None, 'LPNO', 'PAO','LPNOpp']
+        valid_local_models = [None, 'PNO', 'PAO','PNO++']
         local = kwargs.pop('local', None)
         # TODO: case-protect this kwarg
         if local not in valid_local_models:
@@ -98,6 +98,13 @@ class lccwfn_test(object):
         if local_MOs not in valid_local_MOs:
             raise Exception("%s is not an allowed MO localization method." % (local_MOs))
         self.local_MOs = local_MOs
+
+        valid_init_t2 = [None,'OPT']
+        init_t2 = kwargs.pop('init_t2', None)
+        # TODO: case-protect this kwarg
+        if init_t2 not in valid_init_t2:
+            raise Exception("%s is not an allowed initial t2 amplitudes." % (init_t2))
+        self.init_t2 = init_t2
 
         self.ref = scf_wfn
         self.eref = self.ref.energy()
@@ -135,7 +142,7 @@ class lccwfn_test(object):
         self.H = Hamiltonian(self.ref, self.C, self.C, self.C, self.C)
         
         if local is not None:
-            self.Local = Local(local, self.C, self.nfzc, self.no, self.nv, self.H, self.local_cutoff)        
+            self.Local = Local(local, self.C, self.nfzc, self.no, self.nv, self.H, self.local_cutoff, self.init_t2)        
             self.transform_integral(o,v)
               
         # denominators
@@ -162,6 +169,7 @@ class lccwfn_test(object):
                  
                 X = self.Local.L[ij].T @ self.Local.Q[ij].T @ self.H.ERI[i,j,v,v] @ self.Local.Q[ij] @ self.Local.L[ij] 
                 t2_ij.append( -1*X/ (self.Local.eps[ij].reshape(1,-1) + self.Local.eps[ij].reshape(-1,1) - self.H.F[i,i] - self.H.F[j,j])) 
+
                 L_ij = 2.0 * t2_ij[ij] - t2_ij[ij].T
                 mp2_ij = np.sum(np.multiply(self.ERIoovv_ij[ij][i,j], L_ij))
                 emp2 += mp2_ij
@@ -191,8 +199,7 @@ class lccwfn_test(object):
 
         print("mp2 energy in the local basis right before")    
         print(emp2)
-       
-         
+                
         ecc = self.localcc_energy(o,v,F,self.Loovv_ij,self.t1,self.t2_ij)
         print("CC Iter %3d: CC Ecorr = %.15f dE = % .5E MP2" % (0,ecc,-ecc)) 
         for niter in range(1, maxiter+1):
@@ -247,6 +254,7 @@ class lccwfn_test(object):
         Looov_ij = []
         Loovo_ij = []
         Lovvo_ij = [] 
+
         #contraction notation i,j,a,b typically MO; A,B,C,D virtual PNO; Z,X,Y virtual semicanonical PNO
         for ij in range(self.no*self.no):
             i = ij // self.no
@@ -308,6 +316,7 @@ class lccwfn_test(object):
  
         r2_ij = []
         Fae_ij = self.build_localFae(o, v, self.Fvv_ij,Fov_ii, self.Lovvv_ij, self.Loovv_ij, t1, t2_ij)
+        lFmi = self.build_lFmi(o, v, F, self.Fov_ii, self.Looov_ij, self.Loovv_ij, t1, t2_ij)
 
         Fae = self.build_Fae(o, v, F, L, t1, t2_ij)
         Fmi = self.build_Fmi(o, v, F, L, t1, t2_ij)
@@ -345,6 +354,7 @@ class lccwfn_test(object):
 
             #For consistency at the moment, I have kept all the contraction with singles in the MO basis then transforming them 
             #to the semicanonical local basis ... but for Fae1 and Fae2, the local implementation works!!!
+        
             #second term of Fae
             #for m in range(self.no):
                 #mm = m*self.no + m
@@ -375,22 +385,53 @@ class lccwfn_test(object):
                 n = mn % self.no
                 Sijmn = L[ij].T @ Q[ij].T @ Q[mn] @ L[mn]
 
-       #try for tau to have it in mn without any overlaps then just project the mn to ij here instead of in the tau function
-
+                #try for tau to have it in mn without any overlaps then just project the mn to ij here instead of in the tau function
                 Fae3 -= contract('aA,AF,EF,eE->ae',Sijmn, self.build_localtau(mn,mn,t1,t2_ij,1.0,0.5),Loovv_ij[mn][m,n],Sijmn)
+
             Fae_ij.append(Fae + Fae1 + Fae2)# + Fae3)
         return Fae_ij
 
 
     #should I make this local? 
-    def build_Fmi(self, o, v, F, L, t1, t2_ij):
+    def build_Fmi(self, o, v, F, L, t1, t2):
         Fmi = F[o,o].copy()
         Fmi = Fmi + 0.5 * contract('ie,me->mi', t1, F[o,v])
         Fmi = Fmi + contract('ne,mnie->mi', t1, L[o,o,o,v])
-        Fmi = Fmi + contract('inef,mnef->mi', self.build_tau(t1, t2_ij, 1.0, 0.5), L[o,o,v,v])
+        Fmi = Fmi + contract('inef,mnef->mi', self.build_tau(t1, t2, 1.0, 0.5), L[o,o,v,v])
         return Fmi
 
 
+    def build_lFmi(self, o, v, F, Fov_ii, Looov_ij, Loovv_ij, t1, t2_ij):
+        Q = self.Local.Q 
+        L = self.Local.L
+        tmp = F[o,o].copy()
+   
+        Fmi1 = np.zeros_like(tmp)
+        Fmi2 = np.zeros_like(tmp)
+        Fmi3 = np.zeros_like(tmp)
+
+        for ij in range(self.no*self.no):
+            i = ij // self.no 
+            j = ij % self.no
+            ii = i*self.no + i            
+ 
+            for m in range(self.no):
+                X = self.t1[i] @ Q[ii]
+                Y = X @ L[ii] 
+                Fmi1[m,i] += 0.5 * contract('e,e->',Y,Fov_ii[ii][m])
+            
+                for n in range(self.no):
+                    mn = m *self.no + n
+                    nn = n *self.no + n
+                    X = self.t1[n] @ self.Local.Q[nn]
+                    Y = X @ self.Local.L[nn]
+                    Fmi2[m,i] += contract('e,e->',Y,Looov_ij[nn][m,n,i,:])
+                    
+                    in_pair = i*self.no + n  
+                    Fmi3[m,i] += contract('EF,EF->', self.build_localtau(in_pair,in_pair,t1,t2_ij,1.0,0.5),Loovv_ij[in_pair][m,n,:,:]) 
+         
+        Fmi = tmp + Fmi1 + Fmi2 + Fmi3
+        return Fmi
 
     def build_Fme(self, o, v, F, L, t1):
         Fme = F[o,v].copy()
@@ -441,7 +482,7 @@ class lccwfn_test(object):
                 Sijjn = L[ij].T @ Q[ij].T @ Q[jn] @ L[jn]
 
                 #incorrect since tau is in pair jn which j is a target index ... don't know how to contract
-                Wmbej3 -= contract('FB,mEF,eE,bB->mbe', self.build_localtau(jn,jn,t1, t2_ij, 0.5, 1.0), ERIoovv_ij[jn][:,n,:,:],Sijjn,Sijjn)
+                #Wmbej3 -= contract('FB,mEF,eE,bB->mbe', self.build_localtau(jn,jn,t1, t2_ij, 0.5, 1.0), ERIoovv_ij[jn][:,n,:,:],Sijjn,Sijjn)
                 #Wmbej3 -= contract('FB,mef,fF,bB->mbe', self.build_localtau(jn,jn,t1, t2_ij, 0.5, 1.0), ERIoovv_ij[ij][:,n,:,:],Sijjn,Sijjn)
                
                 Sijnj = L[ij].T @ Q[ij].T @ Q[nj] @ L[nj]

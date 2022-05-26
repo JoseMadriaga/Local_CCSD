@@ -85,7 +85,7 @@ class ccwfn_old(object):
         # models requiring T1-transformed integrals
         self.need_t1_transform = ['CC2', 'CC3']
 
-        valid_local_models = [None, 'LPNO', 'PAO','LPNOpp']
+        valid_local_models = [None, 'PNO', 'PAO','PNO++']
         local = kwargs.pop('local', None)
         # TODO: case-protect this kwarg
         if local not in valid_local_models:
@@ -98,6 +98,13 @@ class ccwfn_old(object):
         if local_MOs not in valid_local_MOs:
             raise Exception("%s is not an allowed MO localization method." % (local_MOs))
         self.local_MOs = local_MOs
+
+        valid_init_t2 = [None,'OPT']
+        init_t2 = kwargs.pop('init_t2', None)
+        # TODO: case-protect this kwarg
+        if init_t2 not in valid_init_t2:
+            raise Exception("%s is not an allowed initial t2 amplitudes." % (init_t2))
+        self.init_t2 = init_t2
 
         self.ref = scf_wfn
         self.eref = self.ref.energy()
@@ -135,7 +142,7 @@ class ccwfn_old(object):
         self.H = Hamiltonian(self.ref, self.C, self.C, self.C, self.C)
 
         if local is not None:
-            self.Local = Local(local, self.C, self.nfzc, self.no, self.nv, self.H, self.local_cutoff)        
+            self.Local = Local(local, self.C, self.nfzc, self.no, self.nv, self.H, self.local_cutoff, self.init_t2)        
 
         # denominators
         eps_occ = np.diag(self.H.F)[o]
@@ -406,7 +413,7 @@ class ccwfn_old(object):
             r_T2 = 0.5 * ERI[o,o,v,v].copy() #r2
             r_T2 = r_T2 + contract('ijae,be->ijab', t2, Fae) #r2_1
             tmp = contract('mb,me->be', t1, Fme) #r2_2
-            r_T2 = r_T2 - 0.5 * contract('ijae,be->ijab', t2, tmp) #r2_23
+            r_T2 = r_T2 - 0.5 * contract('ijae,be->ijab', t2, tmp) #r2_3
             r_T2 = r_T2 - contract('imab,mj->ijab', t2, Fmi) #r2_4
             tmp = contract('je,me->jm', t1, Fme) #r2_5
             r_T2 = r_T2 - 0.5 * contract('imab,jm->ijab', t2, tmp) #r2_6
