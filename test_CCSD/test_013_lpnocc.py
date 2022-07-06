@@ -6,9 +6,8 @@ Test basic LPNO-CCSD energy and Lambda code
 import psi4
 import numpy as np
 from molecules import *
-from lccwfn_test import *
+from lccwfn_test2 import *
 from ccwfn_old import *
-from lccwfn import *
 
 # Psi4 Setup
 psi4.set_memory('2 GB')
@@ -34,7 +33,7 @@ emp2_ref = psi4.energy('mp2')
 print(emp2_ref-rhf_e)
 print(emp2_ref)
 
-maxiter = 1000
+maxiter = 200
 e_conv = 1e-7
 r_conv = 1e-3
 max_diis = 8
