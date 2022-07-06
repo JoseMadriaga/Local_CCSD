@@ -8,7 +8,7 @@ The two files above work such that for every term I implement in lccwfn.py can b
 
 test_013_lpnocc.py -> This is the input file I use to test my code 
 
-As of now, lccwfn_test2.py has an error and cannot be run properly. 
+AS of now, lccwfn_test2.py runs but divergences. 
 
 PNOformofCCSD -> Documentation of the derivation and implementation of local CCSD
 
